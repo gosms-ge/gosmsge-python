@@ -18,13 +18,9 @@ setup(
         'gosmsge'
     ]),
     install_requires=[
-        'requests>=2.25.1'
+        'requests>=2.25.1',
+        'requests-mock>=1.9.3'
     ],
-    extras_require={
-        'dev': [
-            'requests-mock>=1.9.3'
-        ]
-    },
     license='MIT',
     license_file='LICENSE',
     setup_requires=['pytest-runner'],
