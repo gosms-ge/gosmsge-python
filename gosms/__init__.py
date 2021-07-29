@@ -1,5 +1,8 @@
+import requests
+
 from gosms.sms import SMS
-from gosms.settings import GOSMS_SETTINGS as SETTINGS
+from gosms.settings import DEV_URLS, GOSMS_SETTINGS as SETTINGS
+import requests_mock
 
 try:
     from django.conf.settings import GOSMS_SETTINGS, DEBUG
@@ -12,9 +15,4 @@ except ModuleNotFoundError:
     """Create gosms manually and pass api_key"""
     pass
 
-if SETTINGS['dev_mode']:
-    SETTINGS['client'] = 'gosms.sms.ConsoleClient'
-
-client = getattr(__import__('gosms.sms', fromlist=['GOSMSClient']), 'GOSMSClient')
-
-sms: SMS = SMS(SETTINGS['api_key'], client=client)
+sms: SMS = SMS(SETTINGS['api_key'])
