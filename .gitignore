@@ -3,3 +3,6 @@
 __pycache__/
 .pytest_cache/
 gosmsge.egg-info/
+.eggs/
+dist/
+build/
