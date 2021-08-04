@@ -5,13 +5,13 @@ with open("README.MD", "r", encoding="utf-8") as readme_file:
 
 setup(
     name='gosmsge',
-    version='1.0.0',
+    version='1.0.2',
     description='Package for GoSMSGE that helps you to send messages to your clients',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='Graey',
     project_urls={
-        'Source': 'https://github.com/tavkhelidzeluka/gosmsge.git',
+        'Source': 'https://github.com/gosms-ge/gosmsge-python',
     },
     author_email='info@graey.ge',
     packages=find_packages(include=[
