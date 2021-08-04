@@ -17,7 +17,7 @@ from gosms import SMS
 
 sms: SMS = SMS('api_key')
 
-sms.client.send('995555555555', 'Hello!', 'GOSMS.GE')
+sms.send('995555555555', 'Hello!', 'GOSMS.GE')
 ```
 
 ### Check status of message
@@ -27,7 +27,7 @@ from gosms import SMS
 
 sms: SMS = SMS('api_key')
 
-sms.client.status('message_id')
+sms.status('message_id')
 ```
 
 ### Check balance
@@ -38,7 +38,7 @@ from gosms import sms
 
 GOSMS_SETTINGS['api_key'] = 'your_api_key'
 
-sms.client.balance()
+sms.balance()
 ```
 
 # usage in Django
@@ -65,17 +65,17 @@ from gosms import sms
 
 def send_message_view(request):
     """ :returns {"code": string,"message": string,"message_id": number,"balance": number,"user": string} """
-    return sms.client.send('995555555555', 'Hello!', 'GOSMS.GE')
+    return sms.send('995555555555', 'Hello!', 'GOSMS.GE')
 
 
 def check_status_view(request):
     """ :returns { id: number,sender: string,receiver: string,message: string',message_id: string,amount: number,status: string } """
-    return sms.client.status('message_id')
+    return sms.status('message_id')
 
 
 def check_balance_view(request):
     """ returns { balance: number, user: string } """
-    return sms.client.balance()
+    return sms.balance()
 ```
 
 ### You can use it anywhere
@@ -134,7 +134,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        sms.client.send(self.phone_number, 'user created', 'GOSMS.GE')
+        sms.send(self.phone_number, 'user created', 'GOSMS.GE')
 ```
 
 ```python
@@ -151,12 +151,12 @@ def user_register(request):
     )
     user.set_password(request.POST.get('password'))
     user.save()
-    sms.client.send_otp(user.phone_number)
+    sms.send_otp(user.phone_number)
 
 
 def verify_user(request):
     """ verify otp method raises exception if details are incorrect """
-    response_data = sms.client.verify_otp(
+    response_data = sms.verify_otp(
         request.POST.get('phone_number'),
         request.POST.get('hash'),
         request.POST.get('code')
