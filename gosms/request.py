@@ -30,7 +30,7 @@ class AbstractRequest(ABC):
         """ get method to send GET requests to specific urls """
 
 
-class MockRequest(AbstractRequest, Validation):
+class RequestMock(AbstractRequest, Validation):
     message_id: int = 0
     balance: int = 94
 
@@ -52,23 +52,23 @@ class MockRequest(AbstractRequest, Validation):
         return self._messages[int(message_id)]
 
     def __sms_send(self, request, context) -> dict:
-        data = MockRequest.parse_request_data(request.text)
+        data = RequestMock.parse_request_data(request.text)
 
-        if MockRequest.validate_phone_number(data.get('to')[0]):
-            MockRequest.message_id += 1
+        if RequestMock.validate_phone_number(data.get('to')[0]):
+            RequestMock.message_id += 1
             message_data = {
                 'success': True,
-                'messageId': MockRequest.message_id,
+                'messageId': RequestMock.message_id,
                 'from': data.get('from')[0],
                 'to': data.get('to')[0],
                 'text': data.get('text')[0],
                 'sendAt': datetime.now().isoformat(),
-                'balance': MockRequest.balance,
+                'balance': RequestMock.balance,
                 'encode': "unicode",
                 'segment': 1,
                 'smsCharacters': len(data.get('text')[0])
             }
-            self._messages[MockRequest.message_id] = message_data
+            self._messages[RequestMock.message_id] = message_data
 
             return message_data
 
@@ -77,7 +77,7 @@ class MockRequest(AbstractRequest, Validation):
         }
 
     def __sms_check(self, request, context) -> dict:
-        data = MockRequest.parse_request_data(request.text)
+        data = RequestMock.parse_request_data(request.text)
         message_data = {
             'status': 'DELIVERED',
             **self.__get_message(data.get('messageId')[0])
@@ -88,13 +88,13 @@ class MockRequest(AbstractRequest, Validation):
     def __balance_check() -> dict:
         return {
             'success': True,
-            'balance': MockRequest.balance
+            'balance': RequestMock.balance
         }
 
     def __send_otp(self, request, context) -> dict:
-        data = MockRequest.parse_request_data(request.text)
+        data = RequestMock.parse_request_data(request.text)
         phone = data.get('phone')[0]
-        if MockRequest.validate_phone_number(phone):
+        if RequestMock.validate_phone_number(phone):
             hash_key = ''.join([chr(random.randint(97, 122)) for _ in range(30)])
             code = int(''.join([str(random.randint(0, 9)) for _ in range(4)]))
 
@@ -119,7 +119,7 @@ class MockRequest(AbstractRequest, Validation):
             }
 
     def __verify_otp(self, request, context) -> dict:
-        data = MockRequest.parse_request_data(request.text)
+        data = RequestMock.parse_request_data(request.text)
         phone = data.get('phone')[0]
         hash_code = data.get('hash')[0]
         code = int(data.get('code')[0])
