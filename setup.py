@@ -5,7 +5,7 @@ with open("README.MD", "r", encoding="utf-8") as readme_file:
 
 setup(
     name='gosmsge',
-    version='1.0.3',
+    version='1.0.4',
     description='Package for GoSMSGE that helps you to send messages to your clients',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -15,7 +15,7 @@ setup(
     },
     author_email='info@graey.ge',
     packages=find_packages(include=[
-        'gosmsge'
+        'gosms'
     ]),
     install_requires=[
         'requests>=2.25.1',
