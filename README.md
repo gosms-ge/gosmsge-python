@@ -50,11 +50,8 @@ GOSMS_SETTINGS = {
     # you should have valid API key given by gosms.ge
     'api_key': 'your_api_key',
 
-    # if DEBUG is True it will be True but you can override it here
+    # this property will have same value as DEBUG but you can override it here
     'dev_mode': False,
-
-    # choices: GOSMSClient, ConsoleClient;
-    'client': 'gosms.sms.GOSMSClient'
 }
 ```
 

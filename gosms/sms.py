@@ -1,5 +1,5 @@
 from gosms.exceptions import ApiError
-from gosms.request import Request, MockRequest
+from gosms.request import Request, RequestMock
 from gosms.settings import GOSMS_SETTINGS, DEV_URLS
 
 
@@ -17,7 +17,7 @@ class SMS:
         self.request = Request()
         if GOSMS_SETTINGS['dev_mode']:
             SMS.urls = DEV_URLS
-            self.request = MockRequest()
+            self.request = RequestMock()
 
     def __post(self, url_key: str, data=None) -> dict:
         """ utility method for sending post requests """

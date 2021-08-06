@@ -1,8 +1,5 @@
-import requests
-
 from gosms.sms import SMS
 from gosms.settings import DEV_URLS, GOSMS_SETTINGS as SETTINGS
-import requests_mock
 
 try:
     from django.conf.settings import GOSMS_SETTINGS, DEBUG

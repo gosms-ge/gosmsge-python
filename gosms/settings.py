@@ -1,7 +1,6 @@
 GOSMS_SETTINGS = {
     'api_key': None,
-    'dev_mode': False,
-    'request': 'gosms.sms.Request'
+    'dev_mode': False
 }
 
 DEV_URLS = {
