@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/gosms-python.svg)](https://pypi.org/project/gosms-python/)
 [![Python versions](https://img.shields.io/pypi/pyversions/gosms-python.svg)](https://pypi.org/project/gosms-python/)
-[![Tests](https://github.com/gosms-python/gosms-python-python/actions/workflows/release.yml/badge.svg)](https://github.com/gosms-python/gosms-python-python/actions)
+[![Tests](https://github.com/gosms-ge/gosmsge-python/actions/workflows/release.yml/badge.svg)](https://github.com/gosms-ge/gosmsge-python/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Official Python SDK for the [GoSMS.GE](https://gosms.ge) SMS gateway. Send SMS messages, manage OTP verification, and check balances with both sync and async clients.
