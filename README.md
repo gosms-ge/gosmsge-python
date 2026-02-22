@@ -1,8 +1,8 @@
 # GoSMS.GE Python SDK
 
-[![PyPI version](https://img.shields.io/pypi/v/gosms-ge.svg)](https://pypi.org/project/gosms-ge/)
-[![Python versions](https://img.shields.io/pypi/pyversions/gosms-ge.svg)](https://pypi.org/project/gosms-ge/)
-[![Tests](https://github.com/gosms-ge/gosms-ge-python/actions/workflows/release.yml/badge.svg)](https://github.com/gosms-ge/gosms-ge-python/actions)
+[![PyPI version](https://img.shields.io/pypi/v/gosms-python.svg)](https://pypi.org/project/gosms-python/)
+[![Python versions](https://img.shields.io/pypi/pyversions/gosms-python.svg)](https://pypi.org/project/gosms-python/)
+[![Tests](https://github.com/gosms-python/gosms-python-python/actions/workflows/release.yml/badge.svg)](https://github.com/gosms-python/gosms-python-python/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 Official Python SDK for the [GoSMS.GE](https://gosms.ge) SMS gateway. Send SMS messages, manage OTP verification, and check balances with both sync and async clients.
@@ -10,13 +10,13 @@ Official Python SDK for the [GoSMS.GE](https://gosms.ge) SMS gateway. Send SMS m
 ## Installation
 
 ```bash
-pip install gosms-ge
+pip install gosms-python
 ```
 
 For async support:
 
 ```bash
-pip install gosms-ge[async]
+pip install gosms-python[async]
 ```
 
 ## Quick Start
@@ -224,7 +224,7 @@ Other changes:
 - `GoSmsApiError` now extends `Exception` (was `BaseException`)
 - Added `GoSmsErrorCode` constants for typed error handling
 - Added `send_bulk()` and `create_sender()` endpoints
-- Added async client (`AsyncSMS`) via `pip install gosms-ge[async]`
+- Added async client (`AsyncSMS`) via `pip install gosms-python[async]`
 - All responses are typed frozen dataclasses
 - Removed `dev_mode` / `RequestMock` in favor of standard test mocking
 
@@ -235,6 +235,6 @@ MIT
 ## Links
 
 - Website: https://gosms.ge
-- PyPI: https://pypi.org/project/gosms-ge/
-- GitHub: https://github.com/gosms-ge/gosms-ge-python
+- PyPI: https://pypi.org/project/gosms-python/
+- GitHub: https://github.com/gosms-python/gosms-python-python
 - Support: info@gosms.ge
