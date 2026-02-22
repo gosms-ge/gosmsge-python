@@ -58,11 +58,6 @@ jobs:
     needs: release
     if: needs.release.outputs.released == 'true'
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/project/gosmsge/
-    permissions:
-      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -80,10 +75,13 @@ jobs:
           sed -i "s/__version__ = \".*\"/__version__ = \"$VERSION\"/" src/gosms/__init__.py
 
       - name: Install build tools
-        run: pip install build
+        run: pip install build twine
 
       - name: Build package
         run: python -m build
 
       - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
+        run: twine upload dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
