@@ -236,5 +236,5 @@ MIT
 
 - Website: https://gosms.ge
 - PyPI: https://pypi.org/project/gosms-python/
-- GitHub: https://github.com/gosms-python/gosms-python-python
+- GitHub: https://github.com/gosms-ge/gosmsge-python
 - Support: info@gosms.ge
