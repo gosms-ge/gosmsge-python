@@ -6,6 +6,28 @@ from typing import Any
 
 
 @dataclass(frozen=True)
+class RateLimitInfo:
+    """Rate limit information from OTP endpoint response headers."""
+
+    limit: int | None = None
+    remaining: int | None = None
+    retry_after: int | None = None
+
+    @classmethod
+    def from_headers(cls, headers: dict[str, str]) -> RateLimitInfo | None:
+        limit = headers.get("X-RateLimit-Limit")
+        remaining = headers.get("X-RateLimit-Remaining")
+        retry_after = headers.get("Retry-After")
+        if limit is None and remaining is None and retry_after is None:
+            return None
+        return cls(
+            limit=int(limit) if limit else None,
+            remaining=int(remaining) if remaining else None,
+            retry_after=int(retry_after) if retry_after else None,
+        )
+
+
+@dataclass(frozen=True)
 class SmsSendResponse:
     success: bool
     message_id: int
@@ -134,6 +156,7 @@ class OtpSendResponse:
     encode: str
     segment: int
     sms_characters: int
+    rate_limit: RateLimitInfo | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OtpSendResponse:
@@ -153,6 +176,7 @@ class OtpSendResponse:
 class OtpVerifyResponse:
     success: bool
     verify: bool
+    rate_limit: RateLimitInfo | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> OtpVerifyResponse:

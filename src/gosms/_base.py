@@ -43,12 +43,20 @@ class _BaseClient:
         payload.update(kwargs)
         return payload
 
-    def _parse_response(self, data: dict[str, Any], status_code: int) -> dict[str, Any]:
+    def _parse_response(
+        self, data: dict[str, Any], status_code: int, headers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         error_code = data.get("errorCode", 0)
         if status_code >= 400 or error_code:
+            retry_after = None
+            if headers:
+                ra = headers.get("Retry-After")
+                if ra:
+                    retry_after = int(ra)
             raise GoSmsApiError(
                 error_code=error_code,
                 message=data.get("message", "Unknown error"),
+                retry_after=retry_after,
             )
         return data
 

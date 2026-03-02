@@ -65,6 +65,11 @@ for msg in result.messages:
 ```python
 result = sms.send_otp("995555123456")
 print(result.hash)  # "abc123hash" — save this for verification
+
+# Rate limit info (available since v2.1.0)
+if result.rate_limit:
+    print(result.rate_limit.remaining)  # 9
+    print(result.rate_limit.limit)      # 10
 ```
 
 ### Verify OTP
@@ -72,6 +77,10 @@ print(result.hash)  # "abc123hash" — save this for verification
 ```python
 result = sms.verify_otp("995555123456", "abc123hash", "1234")
 print(result.verify)  # True
+
+# Rate limit info
+if result.rate_limit:
+    print(result.rate_limit.remaining)  # 8
 ```
 
 ### Check Message Status
@@ -165,24 +174,38 @@ except GoSmsApiError as e:
         print("Check your API key")
 ```
 
+### Rate Limit Errors
+
+When OTP rate limits are exceeded, the error includes `retry_after` (seconds until the lockout expires):
+
+```python
+try:
+    result = sms.send_otp("995555123456")
+except GoSmsApiError as e:
+    if e.error_code == GoSmsErrorCode.TOO_MANY_REQUESTS:
+        print(f"Too many attempts. Retry after {e.retry_after}s")
+    elif e.error_code == GoSmsErrorCode.ACCOUNT_LOCKED:
+        print(f"Account locked. Retry after {e.retry_after}s")
+```
+
 ### Error Codes
 
 | Code | Constant | Description |
 |------|----------|-------------|
 | 100 | `INVALID_API_KEY` | Invalid API key |
-| 101 | `INVALID_PHONE_NUMBER` | Invalid phone number |
+| 101 | `INVALID_SENDER` | Invalid sender name |
 | 102 | `INSUFFICIENT_BALANCE` | Insufficient balance |
-| 103 | `SENDER_NOT_FOUND` | Sender name not found |
-| 104 | `INVALID_TEXT` | Invalid message text |
-| 105 | `TOO_MANY_RECIPIENTS` | Too many recipients (max 1000) |
-| 106 | `INVALID_MESSAGE_ID` | Invalid message ID |
+| 103 | `INVALID_PARAMETERS` | Invalid request parameters |
+| 104 | `MESSAGE_NOT_FOUND` | Message not found |
+| 105 | `INVALID_PHONE` | Invalid phone number |
+| 106 | `OTP_FAILED` | OTP verification failed |
 | 107 | `SENDER_EXISTS` | Sender name already exists |
-| 108 | `INVALID_SENDER_NAME` | Invalid sender name |
-| 109 | `INVALID_OTP_HASH` | Invalid OTP hash |
-| 110 | `INVALID_OTP_CODE` | Invalid OTP code |
-| 111 | `OTP_EXPIRED` | OTP expired |
-| 112 | `OTP_ALREADY_VERIFIED` | OTP already verified |
-| 113 | `RATE_LIMIT_EXCEEDED` | Rate limit exceeded |
+| 108 | `NOT_CONFIGURED` | API key not configured |
+| 109 | `TOO_MANY_REQUESTS` | Too many OTP requests |
+| 110 | `ACCOUNT_LOCKED` | Account temporarily locked |
+| 111 | `OTP_EXPIRED` | OTP code expired |
+| 112 | `OTP_ALREADY_USED` | OTP already verified |
+| 113 | `INVALID_NO_SMS_NUMBER` | Invalid no-SMS number |
 
 ## Response Types
 
@@ -192,11 +215,21 @@ All methods return typed frozen dataclasses:
 |--------|-------------|------------|
 | `send()` | `SmsSendResponse` | `success`, `message_id`, `balance` |
 | `send_bulk()` | `SendBulkSmsResponse` | `success`, `total_count`, `messages` |
-| `send_otp()` | `OtpSendResponse` | `success`, `hash`, `balance` |
-| `verify_otp()` | `OtpVerifyResponse` | `success`, `verify` |
+| `send_otp()` | `OtpSendResponse` | `success`, `hash`, `balance`, `rate_limit` |
+| `verify_otp()` | `OtpVerifyResponse` | `success`, `verify`, `rate_limit` |
 | `status()` | `CheckStatusResponse` | `success`, `status`, `message_id` |
 | `balance()` | `BalanceResponse` | `success`, `balance` |
 | `create_sender()` | `SenderCreateResponse` | `success` |
+
+### RateLimitInfo
+
+The `rate_limit` field on OTP responses is a `RateLimitInfo` object (or `None` if the server didn't return rate limit headers):
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `limit` | `int \| None` | Maximum attempts allowed |
+| `remaining` | `int \| None` | Attempts remaining |
+| `retry_after` | `int \| None` | Seconds until lockout expires (only on error) |
 
 ## Migration from v1.x
 

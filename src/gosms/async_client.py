@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import replace
 from typing import Any
 
 import httpx
@@ -12,6 +13,7 @@ from gosms.types import (
     CheckStatusResponse,
     OtpSendResponse,
     OtpVerifyResponse,
+    RateLimitInfo,
     SendBulkSmsResponse,
     SenderCreateResponse,
     SmsSendResponse,
@@ -68,7 +70,7 @@ class AsyncSMS(_BaseClient):
             )
         return self._client
 
-    async def _make_request(self, endpoint: str, payload: dict[str, Any]) -> dict[str, Any]:
+    async def _make_request(self, endpoint: str, payload: dict[str, Any]) -> tuple[dict[str, Any], dict[str, str]]:
         url = self._build_url(endpoint)
         client = self._get_client()
         last_error: Exception | None = None
@@ -78,8 +80,9 @@ class AsyncSMS(_BaseClient):
                 self._log(f"Request attempt {attempt}/{self._retries} to {endpoint}")
                 response = await client.post(url, json=payload)
                 data: dict[str, Any] = response.json()
+                headers = dict(response.headers)
                 self._log("Response:", data)
-                return self._parse_response(data, response.status_code)
+                return self._parse_response(data, response.status_code, headers), headers
             except Exception as exc:
                 last_error = exc
                 self._log(f"Attempt {attempt} failed:", exc)
@@ -105,7 +108,7 @@ class AsyncSMS(_BaseClient):
         payload = self._build_payload(to=phone_number, text=text, urgent=urgent)
         payload["from"] = sender_name
 
-        data = await self._make_request("sendsms", payload)
+        data, _ = await self._make_request("sendsms", payload)
         return SmsSendResponse.from_dict(data)
 
     async def send_bulk(
@@ -127,15 +130,19 @@ class AsyncSMS(_BaseClient):
         if no_sms_number is not None:
             payload["noSmsNumber"] = no_sms_number
 
-        data = await self._make_request("sendbulk", payload)
+        data, _ = await self._make_request("sendbulk", payload)
         return SendBulkSmsResponse.from_dict(data)
 
     async def send_otp(self, phone_number: str) -> OtpSendResponse:
         """Send an OTP (One-Time Password) SMS."""
         self._validate_phone_number(phone_number, "phone_number")
 
-        data = await self._make_request("otp/send", self._build_payload(phone=phone_number))
-        return OtpSendResponse.from_dict(data)
+        data, headers = await self._make_request("otp/send", self._build_payload(phone=phone_number))
+        resp = OtpSendResponse.from_dict(data)
+        rate_limit = RateLimitInfo.from_headers(headers)
+        if rate_limit:
+            resp = replace(resp, rate_limit=rate_limit)
+        return resp
 
     async def verify_otp(self, phone_number: str, hash: str, code: str) -> OtpVerifyResponse:
         """Verify an OTP code."""
@@ -143,25 +150,29 @@ class AsyncSMS(_BaseClient):
         self._validate_string(hash, "hash")
         self._validate_string(code, "code")
 
-        data = await self._make_request(
+        data, headers = await self._make_request(
             "otp/verify",
             self._build_payload(phone=phone_number, hash=hash, code=code),
         )
-        return OtpVerifyResponse.from_dict(data)
+        resp = OtpVerifyResponse.from_dict(data)
+        rate_limit = RateLimitInfo.from_headers(headers)
+        if rate_limit:
+            resp = replace(resp, rate_limit=rate_limit)
+        return resp
 
     async def status(self, message_id: int) -> CheckStatusResponse:
         """Check the delivery status of a sent SMS message."""
-        data = await self._make_request("checksms", self._build_payload(messageId=message_id))
+        data, _ = await self._make_request("checksms", self._build_payload(messageId=message_id))
         return CheckStatusResponse.from_dict(data)
 
     async def balance(self) -> BalanceResponse:
         """Check the current SMS balance of your account."""
-        data = await self._make_request("sms-balance", self._build_payload())
+        data, _ = await self._make_request("sms-balance", self._build_payload())
         return BalanceResponse.from_dict(data)
 
     async def create_sender(self, name: str) -> SenderCreateResponse:
         """Register a new sender name."""
         self._validate_string(name, "name")
 
-        data = await self._make_request("sender", self._build_payload(name=name))
+        data, _ = await self._make_request("sender", self._build_payload(name=name))
         return SenderCreateResponse.from_dict(data)

@@ -24,9 +24,10 @@ class GoSmsErrorCode:
 class GoSmsApiError(Exception):
     """Raised when the GoSMS.GE API returns an error response."""
 
-    def __init__(self, error_code: int, message: str) -> None:
+    def __init__(self, error_code: int, message: str, retry_after: int | None = None) -> None:
         self.error_code = error_code
         self.message = message
+        self.retry_after = retry_after
         super().__init__(f"[{error_code}] {message}")
 
     def __repr__(self) -> str:
